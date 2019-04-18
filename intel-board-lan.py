@@ -47,15 +47,15 @@ def intelServer(my_ip, my_port, phase):
     print("Server Closed at {}:{}".format(my_ip, my_port))
 
 
-def intelClient(server_ip, server_port, message):
-    intel_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    intel_client.connect((server_ip, server_port))
-    intel_client.send(message.encode())
-    recvd_data = (intel_client.recv(1024)).decode()
-    print(recvd_data)
+# def intelClient(server_ip, server_port, message):
+#     intel_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     intel_client.connect((server_ip, server_port))
+#     intel_client.send(message.encode())
+#     recvd_data = (intel_client.recv(1024)).decode()
+#     print(recvd_data)
 
-    print("Closing connection")
-    intel_client.close()
+#     print("Closing connection")
+#     intel_client.close()
 
 
 def generateTime(default):

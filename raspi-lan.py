@@ -6,23 +6,23 @@ import sys
 my_time_slot = 0
 
 
-def raspiServer(my_ip, my_port):
-    global my_time_slot
+# def raspiServer(my_ip, my_port):
+#     global my_time_slot
 
-    raspi_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    raspi_server.bind((my_ip, my_port))
-    raspi_server.listen(5)
+#     raspi_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+#     raspi_server.bind((my_ip, my_port))
+#     raspi_server.listen(5)
 
-    print("Server Started at {}:{}".format(my_ip, my_port))
+#     print("Server Started at {}:{}".format(my_ip, my_port))
 
-    conn, addr = raspi_server.accept()
-    # receive time slot
-    my_time_slot = (conn.recv(1024)).decode()
+#     conn, addr = raspi_server.accept()
+#     # receive time slot
+#     my_time_slot = (conn.recv(1024)).decode()
 
-    # reply acknowledgement
-    conn.send(b'ACK')
-    conn.close()
-    raspi_server.close()
+#     # reply acknowledgement
+#     conn.send(b'ACK')
+#     conn.close()
+#     raspi_server.close()
 
 
 def raspiClient(server_ip, server_port, message):
@@ -42,8 +42,8 @@ def raspiClient(server_ip, server_port, message):
     return recvd_data
 
 
-def sendData(my_id):
-    global my_time_slot
+# def sendData(my_id):
+    # global my_time_slot
 
 
 def setupRaspi():
