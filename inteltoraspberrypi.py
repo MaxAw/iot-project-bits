@@ -22,11 +22,8 @@ def intelServer(my_ip, my_port, phase):
 
     while True:
         conn, addr = intel_server.accept()
-        recvd_data = (conn.recv(1024)).decode()
+        recvd_data = conn.recv(1024)
         print("{} at {}".format(recvd_data, time.ctime()))
-
-        # reply time information
-        conn.send(time_info.encode())
 
         if phase == 0:
             # data received as 'RP1%192.168.0.1%8000'
@@ -41,21 +38,65 @@ def intelServer(my_ip, my_port, phase):
             if len(host_dict) == 2:
                 break
 
+        # store recvd_data as file
+        downloadFile(host_id, conn, recvd_data)
+
+        # reply time information
+        conn.send(time_info.encode())
+
     conn.close()
     intel_server.close()
 
     print("Server Closed at {}:{}".format(my_ip, my_port))
 
 
-# def intelClient(server_ip, server_port, message):
-#     intel_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#     intel_client.connect((server_ip, server_port))
-#     intel_client.send(message.encode())
-#     recvd_data = (intel_client.recv(1024)).decode()
-#     print(recvd_data)
+def intelClient(server_ip, server_port, file_name):
+    intel_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    intel_client.connect((server_ip, server_port))
 
-#     print("Closing connection")
-#     intel_client.close()
+    # send file to gateway
+    uploadFile(intel_client, file_name)
+
+    recvd_data = (intel_client.recv(1024)).decode()
+    print(recvd_data)
+
+    print("Closing connection")
+    intel_client.close()
+
+
+def uploadFile(intel_client, file_name):
+
+    # open file to send data
+    send_file = open(file_name, 'rb')
+    message = send_file.read(1024)
+    while message:
+        print("Sending...       ")
+        intel_client.send(message)
+        message = send_file.read(1024)
+
+    send_file.close()
+    print("~~ Sent! ~~")
+
+
+def downloadFile(host_id, conn, recvd_data):
+
+    file_name = 'file' + host_id + '.txt'
+    # open file to store received data (will overwrite old data)
+    recv_file = open(file_name, 'wb')
+
+    while recvd_data:
+        print("Receiving...     ")
+
+        # add timestamp to received data
+        data_with_timestamp = "Data received at " + time.ctime() + " : " + recvd_data
+        recv_file.write(data_with_timestamp)
+        recvd_data = conn.recv(1024)
+        # print("{} at {}".format(recvd_data, time.ctime()))
+
+    # save file contents
+    recv_file.close()
+
+    print("~~ Received! ~~")
 
 
 def generateTime(default):
