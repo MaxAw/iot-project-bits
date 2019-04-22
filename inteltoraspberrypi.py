@@ -6,7 +6,7 @@ import sys
 
 # maintain a dictionary of host ID and IP address
 host_dict = {}
-time_info = '120%2'
+time_info = '120%3'
 
 
 def intelServer(my_ip, my_port, phase):
@@ -34,10 +34,12 @@ def intelServer(my_ip, my_port, phase):
             # add host information to host dictionary
             host_dict[host_id] = ((host_ip, host_port))
 
-            # TODO : modify if no. of hosts unknown                break
-
-        # store recvd_data as file
-        downloadFile(host_id, conn, recvd_data)
+            # TODO : modify if no. of hosts unknown
+            if len(host_dict) == 2:
+                break
+        else:
+            # store recvd_data as file
+            downloadFile(host_id, conn, recvd_data)
 
         # reply time information
         conn.send(time_info.encode())
@@ -100,9 +102,8 @@ def downloadFile(host_id, conn, recvd_data):
 def generateTime(default):
     global host_dict
 
-    default_time_slot = 1 * 60
     default_time_period = 2 * 60
-    num_of_hosts = len(host_dict)
+    num_of_hosts = len(host_dict) + 1       # add one for intel board time slot
 
     if default:
         time_info = str(default_time_period) + "%" + str(num_of_hosts)
