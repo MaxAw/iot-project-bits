@@ -1,7 +1,11 @@
+# run code as python3 raspisensing.py raspiID raspiIP raspiPORT intelIP intelPORT
+
+import sys
 import time
+import raspitointel
 
 import RPi.GPIO as GPIO
-import raspitointel as transmitter
+
 
 # GPIO setup
 channel = 21
@@ -20,12 +24,12 @@ def callback(channel):
 
 def writeToFile(data):
 
-    # open file to write data (will overwrite old data)
+    # open file to append data
     file_name = 'datafile.txt'
-    data_file = open(file_name, 'w')
+    data_file = open(file_name, 'a')
 
     # write data with timestamp
-    data_with_timestamp = time.ctime() + " - " + data
+    data_with_timestamp = time.ctime() + " - " + data + "\n"
     data_file.write(data_with_timestamp)
 
     # save file contents
@@ -34,6 +38,15 @@ def writeToFile(data):
 
 GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when the pin goes HIGH or LOW
 GPIO.add_event_callback(channel, callback)  # assign function to GPIO PIN, Run function on change
+
+# setup Raspberry PI for transmission of data
+my_id = sys.argv[1]
+my_ip = sys.argv[2]
+my_port = int(sys.argv[3])
+
+server_ip = sys.argv[4]
+server_port = int(sys.argv[5])
+raspitointel.setupRaspi(my_id, my_ip, my_port, server_ip, server_port, 'datafile.txt')
 
 while True:
     time.sleep(1)

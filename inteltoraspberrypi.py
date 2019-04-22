@@ -34,9 +34,7 @@ def intelServer(my_ip, my_port, phase):
             # add host information to host dictionary
             host_dict[host_id] = ((host_ip, host_port))
 
-            # TODO : modify if no. of hosts unknown
-            if len(host_dict) == 2:
-                break
+            # TODO : modify if no. of hosts unknown                break
 
         # store recvd_data as file
         downloadFile(host_id, conn, recvd_data)

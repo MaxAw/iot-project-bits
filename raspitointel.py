@@ -42,36 +42,8 @@ def raspiClient(server_ip, server_port, message):
     return recvd_data
 
 
-# def sendData(my_id):
-    # global my_time_slot
-
-
-def setupRaspi():
+def timeScheduler(my_id, server_ip, server_port, filename, time_info):
     global my_time_slot
-
-    my_id = sys.argv[1]
-    my_ip = '127.0.0.1'
-    my_port = int(sys.argv[2])
-
-    server_ip = '127.0.0.1'
-    server_port = int(sys.argv[3])
-
-    # begin server thread
-    # raspi_server = threading.Thread(target=raspiServer, args=(my_ip, my_port, ))
-    # raspi_server.start()
-
-    # connect to Intel server
-    # send data in the format - 'RP1%192.168.0.1%8000'
-
-    my_data = my_id + '%' + my_ip + '%' + str(my_port)
-
-    time_info = raspiClient(server_ip, server_port, my_data)
-
-    time.sleep(1)
-
-    resume = int(input("Enter 1 to resume: "))
-
-    data_to_send = 'This is RP {}'.format(my_id)
 
     wait_counter = 0
 
@@ -92,7 +64,7 @@ def setupRaspi():
             wait_counter = 1
 
         print("Sending...")
-        time_info = raspiClient(server_ip, server_port, data_to_send)
+        time_info = raspiClient(server_ip, server_port)
 
         if time_info != current_time_info:
             reset_time = time_period - wait_time        # wait for reset_time before updating to new schedule
@@ -102,6 +74,34 @@ def setupRaspi():
 
         print("Waiting for next slot...")
         time.sleep(time_period)
+
+
+def setupRaspi(my_id, my_ip, my_port, server_ip, server_port, filename):
+    # global my_time_slot
+
+    # my_id = sys.argv[1]
+    # my_ip = '127.0.0.1'
+    # my_port = int(sys.argv[2])
+
+    # server_ip = '127.0.0.1'
+    # server_port = int(sys.argv[3])
+
+    # begin server thread
+    # raspi_server = threading.Thread(target=raspiServer, args=(my_ip, my_port, ))
+    # raspi_server.start()
+
+    # connect to Intel server
+    # send data in the format - 'RP1%192.168.0.1%8000'
+
+    my_data = my_id + '%' + my_ip + '%' + str(my_port)
+
+    time_info = raspiClient(server_ip, server_port, my_data)
+
+    # wait for intel server to set up
+    time.sleep(5)
+
+    timeScheduler(my_id, )
+    data_to_send = 'This is RP {}'.format(my_id)
 
 
 if __name__ == '__main__':
