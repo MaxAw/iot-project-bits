@@ -13,6 +13,8 @@ def intelServer(my_ip, my_port, phase):
     global host_dict
     global time_info
 
+    slot = 0
+
     intel_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     intel_server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)         # reuse port if not free
     intel_server.bind((my_ip, my_port))
@@ -38,9 +40,10 @@ def intelServer(my_ip, my_port, phase):
             if len(host_dict) == 2:
                 break
         else:
+            host_id = host_dict[slot]
             # store recvd_data as file
             downloadFile(host_id, conn, recvd_data)
-
+            slot = (slot + 1) % 2
         # reply time information
         conn.send(time_info.encode())
 
@@ -119,8 +122,8 @@ def setupIntelBoard():
     global host_dict
     global time_info
 
-    my_ip = '127.0.0.1'
-    my_port = int(sys.argv[1])
+    my_ip = sys.argv[1]
+    my_port = int(sys.argv[2])
 
     # start server and accept raspi connections
     intelServer(my_ip, my_port, 0)
