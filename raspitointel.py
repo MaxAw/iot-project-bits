@@ -1,8 +1,8 @@
 import socket
-import threading
+# import threading
 import time
-import sys
-import os
+# import sys
+import os           # run python program as root to use this
 
 my_time_slot = 0
 
@@ -13,15 +13,37 @@ def raspiClient(server_ip, server_port, message):
 
     print("Connecting...")
 
-    raspi_client.send(message.encode())
+    if message.split('.')[1] is 'txt':
+        uploadFile(raspi_client, message)
+
+    else:
+        raspi_client.send(message.encode())
+
     recvd_data = (raspi_client.recv(1024)).decode()
 
-    print("Recvd data : {}".format(recvd_data))
+    # print("Recvd data : {}".format(recvd_data))
 
     print("Closing connection")
     raspi_client.close()
 
     return recvd_data
+
+
+def uploadFile(raspi_client, file_name):
+
+    # open file to send data
+    send_file = open(file_name, 'rb')
+    message = send_file.read(1024)
+    while message:
+        print("Sending...       ")
+        raspi_client.send(message)
+        message = send_file.read(1024)
+
+    send_file.close()
+    print("~~ Sent! ~~")
+
+    # delete file to make space for new data
+    os.remove(file_name)
 
 
 def wifiSleepWake(status):

@@ -6,7 +6,7 @@ import sys
 
 # maintain a dictionary of host ID and IP address
 host_dict = {}
-time_info = '120%3'
+time_info = '120%3'     # TODO : modify if no. of hosts unknown
 
 
 def intelServer(my_ip, my_port, phase):
