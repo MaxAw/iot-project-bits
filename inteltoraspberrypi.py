@@ -13,6 +13,7 @@ def intelServer(my_ip, my_port, phase):
     global host_dict
     global time_info
 
+    host_count = 0
     slot = 0
 
     intel_server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -36,15 +37,16 @@ def intelServer(my_ip, my_port, phase):
             host_port = int((recvd_data.split('%'))[2])
 
             # add host information to host dictionary
-            host_dict[host_id] = ((host_ip, host_port))
+            host_dict[host_count] = [host_id, (host_ip, host_port)]
+            host_count = host_count + 1
             # reply time information
             conn.send(time_info.encode())
 
             # TODO : modify if no. of hosts unknown
-            if len(host_dict) == 2:
+            if host_count == 2:
                 break
         else:
-            host_id = host_dict[slot]
+            host_id = host_dict[slot][0]
             # store recvd_data as file
             downloadFile(host_id, conn, recvd_data)
             slot = (slot + 1) % 2

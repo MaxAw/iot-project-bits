@@ -75,7 +75,7 @@ def timeScheduler(my_id, server_ip, server_port, filename, time_info):
         wait_time = (int(my_id) - 1) * time_slots       # total time to wait for before sending data
 
         if not wait_counter:
-            print("Waiting for my slot... ")
+            print("Waiting for my slot... {}".format(wait_time))
             wifiSleepWake(0)
             time.sleep(wait_time)
             wait_counter = 1
