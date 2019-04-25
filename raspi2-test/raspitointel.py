@@ -60,15 +60,16 @@ def uploadFile(raspi_client, file_name):
 
 def wifiSleepWake(status):
 
-    if status:
-        # switch on Wi-Fi
-        wifi_cmd = "ifconfig wlan0 up"
-        os.system(wifi_cmd)
+    # if status:
+    #     # switch on Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 up"
+    #     os.system(wifi_cmd)
 
-    else:
-        # switch off Wi-Fi
-        wifi_cmd = "ifconfig wlan0 down"
-        os.system(wifi_cmd)
+    # else:
+    #     # switch off Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 down"
+    #     os.system(wifi_cmd)
+    pass
 
 
 def timeScheduler(my_id, server_ip, server_port, filename, time_info):

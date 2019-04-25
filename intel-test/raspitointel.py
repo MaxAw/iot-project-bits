@@ -4,8 +4,6 @@ import time
 # import sys
 import os           # run python program as root to use this
 
-from shutil import copyfile
-
 my_time_slot = 0
 
 
@@ -33,42 +31,37 @@ def raspiClient(server_ip, server_port, message):
 
 def uploadFile(raspi_client, file_name):
 
-    # copy and delete old file to make space for new data
-    copyfile(file_name, 'buffer.txt')
-    os.remove(file_name)
-
     # open file to send data
-    send_file = open('buffer.txt', 'r')
+    send_file = open(file_name, 'r')
     message = send_file.readline()
-
     send_buffer = ""
-    current_time = time.ctime()
-
-    while message:
+    for _ in range(10):
         send_buffer += message
         # print("Sending...     {}".format(message))
         # raspi_client.send(message)
         message = send_file.readline()
-        if current_time in message:
-            break
 
     raspi_client.send(send_buffer.encode())
 
     send_file.close()
     print("~~ Sent! ~~")
 
+    # delete file to make space for new data
+    os.remove(file_name)
+
 
 def wifiSleepWake(status):
 
-    if status:
-        # switch on Wi-Fi
-        wifi_cmd = "ifconfig wlan0 up"
-        os.system(wifi_cmd)
+    # if status:
+    #     # switch on Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 up"
+    #     os.system(wifi_cmd)
 
-    else:
-        # switch off Wi-Fi
-        wifi_cmd = "ifconfig wlan0 down"
-        os.system(wifi_cmd)
+    # else:
+    #     # switch off Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 down"
+    #     os.system(wifi_cmd)
+    pass
 
 
 def timeScheduler(my_id, server_ip, server_port, filename, time_info):
