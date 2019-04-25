@@ -76,11 +76,18 @@ def timeScheduler(my_id, server_ip, server_port, filename, time_info):
 
         if not wait_counter:
             print("Waiting for my slot... {}".format(wait_time))
-            wifiSleepWake(0)
-            time.sleep(wait_time)
-            wait_counter = 1
+            if not wait_time:
+                wait_counter = 1
+            else:
+                wifiSleepWake(0)
+                time.sleep(wait_time)
+                wait_counter = 1
 
-        wifiSleepWake(1)
+        if not wait_time:
+            pass
+        else:
+            wifiSleepWake(1)
+
         print("Sending...")
         time_info = raspiClient(server_ip, server_port, filename)
 

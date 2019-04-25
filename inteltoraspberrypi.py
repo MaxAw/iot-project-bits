@@ -90,7 +90,7 @@ def downloadFile(host_id, conn, recvd_data):
 
     file_name = 'file' + host_id + '.txt'
     # open file to store received data (will overwrite old data)
-    recv_file = open(file_name, 'wb')
+    recv_file = open(file_name, 'w')
 
     while recvd_data:
         print("Receiving...     ")
