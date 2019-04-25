@@ -25,12 +25,11 @@ def intelServer(my_ip, my_port, phase):
 
     while True:
         conn, addr = intel_server.accept()
-        recvd_data = conn.recv(1024)
+        recvd_data = (conn.recv(1024)).decode()
         print("{} at {}".format(recvd_data, time.ctime()))
 
         if phase == 0:
-            # data received as b'RP1%192.168.0.1%8000'
-            recvd_data = recvd_data.decode()
+            # data received as 'RP1%192.168.0.1%8000'
 
             host_id = (recvd_data.split('%'))[0]
             host_ip = (recvd_data.split('%'))[1]
