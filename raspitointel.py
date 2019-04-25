@@ -34,7 +34,7 @@ def uploadFile(raspi_client, file_name):
     # open file to send data
     send_file = open(file_name, 'rb')
     message = send_file.read(1024)
-    while message:
+    for _ in range(10):
         print("Sending...       ")
         raspi_client.send(message)
         message = send_file.read(1024)

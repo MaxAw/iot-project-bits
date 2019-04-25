@@ -96,7 +96,7 @@ def downloadFile(host_id, conn, recvd_data):
         print("Receiving...     ")
 
         # add timestamp to received data
-        data_with_timestamp = "Data received at " + time.ctime() + " : " + recvd_data
+        data_with_timestamp = "Data received at " + time.ctime() + " : " + str(recvd_data)
         recv_file.write(data_with_timestamp)
         recvd_data = conn.recv(1024)
         # print("{} at {}".format(recvd_data, time.ctime()))
