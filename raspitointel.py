@@ -13,7 +13,7 @@ def raspiClient(server_ip, server_port, message):
 
     print("Connecting...")
 
-    if message.split('.')[1] is 'txt':
+    if message.split('.')[1] == 'txt':
         uploadFile(raspi_client, message)
 
     else:
