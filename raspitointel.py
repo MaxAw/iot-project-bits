@@ -21,7 +21,7 @@ def raspiClient(server_ip, server_port, message):
 
     recvd_data = (raspi_client.recv(1024)).decode()
 
-    # print("Recvd data : {}".format(recvd_data))
+    print("Recvd data : {}".format(recvd_data))
 
     print("Closing connection")
     raspi_client.close()
