@@ -60,15 +60,16 @@ def uploadFile(raspi_client, file_name):
 
 def wifiSleepWake(status):
 
-    if status:
-        # switch on Wi-Fi
-        wifi_cmd = "ifconfig wlan0 up"
-        os.system(wifi_cmd)
+    # if status:
+    #     # switch on Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 up"
+    #     os.system(wifi_cmd)
 
-    else:
-        # switch off Wi-Fi
-        wifi_cmd = "ifconfig wlan0 down"
-        os.system(wifi_cmd)
+    # else:
+    #     # switch off Wi-Fi
+    #     wifi_cmd = "ifconfig wlan0 down"
+    #     os.system(wifi_cmd)
+    pass
 
 
 def timeScheduler(my_id, server_ip, server_port, filename, time_info):
@@ -80,9 +81,9 @@ def timeScheduler(my_id, server_ip, server_port, filename, time_info):
         current_time_info = time_info
 
         time_period = int((time_info.split("%"))[0])         # total time period
-        num_of_hosts = int((time_info.split("%"))[1])        # number of PIs connected to Intel Board
+        num_of_slots = int((time_info.split("%"))[1])        # number of slots
 
-        time_slots = time_period / num_of_hosts         # time slot for each PI
+        time_slots = time_period / num_of_slots         # time slot for each PI
         # print("TIMESLOT : {}".format(time_slots))
         wait_time = (int(my_id) - 1) * time_slots       # total time to wait for before sending data
 

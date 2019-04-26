@@ -12,6 +12,8 @@ channel = 21
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(channel, GPIO.IN)
 
+sensor_name = "Vibration"
+
 
 def callback(channel):
     if GPIO.input(channel):
@@ -23,13 +25,14 @@ def callback(channel):
 
 
 def writeToFile(data):
+    global sensor_name
 
     # open file to append data
     file_name = 'datafile.txt'
     data_file = open(file_name, 'a')
 
     # write data with timestamp
-    data_with_timestamp = time.ctime() + " - " + data + "\n"
+    data_with_timestamp = time.ctime() + " - " + sensor_name + ":" + data + "\n"
     data_file.write(data_with_timestamp)
 
     # save file contents
@@ -40,7 +43,7 @@ GPIO.add_event_detect(channel, GPIO.BOTH, bouncetime=300)  # let us know when th
 GPIO.add_event_callback(channel, callback)  # assign function to GPIO PIN, Run function on change
 
 # setup Raspberry PI for transmission of data
-my_id = sys.argv[1]
+my_id = "raspi" + sys.argv[1]
 my_ip = sys.argv[2]
 my_port = int(sys.argv[3])
 
