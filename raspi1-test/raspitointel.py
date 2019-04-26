@@ -81,9 +81,9 @@ def timeScheduler(my_id, server_ip, server_port, filename, time_info):
         current_time_info = time_info
 
         time_period = int((time_info.split("%"))[0])         # total time period
-        num_of_hosts = int((time_info.split("%"))[1])        # number of PIs connected to Intel Board
+        num_of_slots = int((time_info.split("%"))[1])        # number of slots
 
-        time_slots = time_period / num_of_hosts         # time slot for each PI
+        time_slots = time_period / num_of_slots         # time slot for each PI
         # print("TIMESLOT : {}".format(time_slots))
         wait_time = (int(my_id) - 1) * time_slots       # total time to wait for before sending data
 
@@ -118,7 +118,7 @@ def timeScheduler(my_id, server_ip, server_port, filename, time_info):
 
 def setupRaspi(my_id, my_ip, my_port, server_ip, server_port, filename):
 
-    my_data = my_id + '%' + my_ip + '%' + str(my_port)
+    my_data = "raspi" + str(my_id) + '%' + my_ip + '%' + str(my_port)
 
     time_info = raspiClient(server_ip, server_port, my_data)
 

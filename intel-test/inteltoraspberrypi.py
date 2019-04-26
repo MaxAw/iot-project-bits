@@ -2,11 +2,12 @@ import socket
 import threading
 import time
 import sys
+import os
 
 
 # maintain a dictionary of host ID and IP address
-host_dict = {}
-time_info = '120%3'     # TODO : modify if no. of hosts unknown
+host_dict = dict()
+time_info = '60%3'     # TODO : modify if no. of hosts unknown
 
 
 def intelServer(my_ip, my_port, phase):
@@ -29,7 +30,7 @@ def intelServer(my_ip, my_port, phase):
         print("{} at {}".format(recvd_data, time.ctime()))
 
         if phase == 0:
-            # data received as 'RP1%192.168.0.1%8000'
+            # data received as 'raspi1%192.168.0.1%8000'
 
             host_id = (recvd_data.split('%'))[0]
             host_ip = (recvd_data.split('%'))[1]
@@ -58,12 +59,15 @@ def intelServer(my_ip, my_port, phase):
     print("Server Closed at {}:{}".format(my_ip, my_port))
 
 
-def intelClient(server_ip, server_port, file_name):
+def intelClient(server_ip, server_port, message):
     intel_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     intel_client.connect((server_ip, server_port))
 
-    # send file to gateway
-    uploadFile(intel_client, file_name)
+    if message.split('.')[1] == 'txt':
+        # send file to gateway
+        uploadFile(intel_client, message)
+    else:
+        intel_client.send(message.encode())
 
     recvd_data = (intel_client.recv(1024)).decode()
     print(recvd_data)
@@ -75,12 +79,18 @@ def intelClient(server_ip, server_port, file_name):
 def uploadFile(intel_client, file_name):
 
     # open file to send data
-    send_file = open(file_name, 'rb')
-    message = send_file.read(1024)
+    send_file = open(file_name, 'r')
+    message = send_file.readline()
+
+    send_buffer = ""
+
     while message:
-        print("Sending...       ")
-        intel_client.send(message)
-        message = send_file.read(1024)
+        # print("Sending...       ")
+        send_buffer += message
+        message = send_file.readline()
+
+    intel_client.send(message.encode())
+    os.remove(file_name)
 
     send_file.close()
     print("~~ Sent! ~~")
@@ -88,7 +98,7 @@ def uploadFile(intel_client, file_name):
 
 def downloadFile(host_id, conn, recvd_data):
 
-    file_name = 'file' + host_id + '.txt'
+    file_name = host_id + '.txt'
     # open file to store received data (will overwrite old data)
     recv_file = open(file_name, 'w')
 
@@ -110,30 +120,60 @@ def downloadFile(host_id, conn, recvd_data):
 def generateTime(default):
     global host_dict
 
-    default_time_period = 2 * 60
-    num_of_hosts = len(host_dict) + 1       # add one for intel board time slot
+    default_time_period = 1 * 60
+    num_of_slots = len(host_dict) + 1       # add one for intel board time slot
 
     if default:
-        time_info = str(default_time_period) + "%" + str(num_of_hosts)
+        time_info = str(default_time_period) + "%" + str(num_of_slots)
 
     else:
         time_period = int(input("Enter time period: "))
-        time_info = str(time_period) + "%" + str(num_of_hosts)
+        time_info = str(time_period) + "%" + str(num_of_slots)
 
     return time_info
 
 
-def setupIntelBoard():
+def sendData(host_dict, time_info, server_ip, server_port):
+
+    wait_counter = 0
+
+    while True:
+        time_period = int((time_info.split("%"))[0])         # total time period
+        num_of_slots = int((time_info.split("%"))[1])        # number of slots
+        num_of_hosts = len(host_dict)       # number of PIs connected to Intel Board
+
+        time_slots = time_period / num_of_slots
+        print("{} and {} and {}".format(time_period, num_of_hosts, time_slots))
+
+        print(host_dict)
+        wait_time = (num_of_hosts * time_slots)     # assign last time slot to intel board
+
+        if not wait_counter:
+            print("Waiting for my slot... {}".format(wait_time))
+            time.sleep(wait_time)
+            wait_counter = 1
+
+        print("Sending...")
+        file_name = host_dict[0][0] + '.txt'
+        intelClient(server_ip, server_port, file_name)
+
+        file_name = host_dict[1][0] + '.txt'
+        intelClient(server_ip, server_port, file_name)
+
+
+def setupIntel(my_id, my_ip, my_port, server_ip, server_port):
     global host_dict
     global time_info
-
-    my_ip = sys.argv[1]
-    my_port = int(sys.argv[2])
 
     # start server and accept raspi connections
     intelServer(my_ip, my_port, 0)
 
     time.sleep(1)
+
+    # start client and connect to firebase-intel board
+    my_data = "intel" + str(my_id) + '%' + my_ip + '%' + str(my_port)
+    client_thread = threading.Thread(target=intelClient, args=(server_ip, server_port, my_data,))
+    client_thread.start()
 
     # use default time information
     time_info = generateTime(True)
@@ -141,10 +181,8 @@ def setupIntelBoard():
     server_thread = threading.Thread(target=intelServer, args=(my_ip, my_port, 1, ))
     server_thread.start()
 
+    sendData(host_dict, time_info, server_ip, server_port)
+
     # if time information is to be changed
     time_info = generateTime(False)
     # intelServer(my_ip, my_port, 1, time_info)
-
-
-if __name__ == '__main__':
-    setupIntelBoard()
